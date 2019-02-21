@@ -495,8 +495,8 @@ struct s5p_mfc_dev {
 
 	atomic_t trace_ref;
 	struct _mfc_trace *mfc_trace;
-	atomic_t trace_ref_hwlock;
-	struct _mfc_trace *mfc_trace_hwlock;
+	atomic_t trace_ref_longterm;
+	struct _mfc_trace *mfc_trace_longterm;
 	atomic_t trace_ref_log;
 	struct _mfc_trace_logging *mfc_trace_logging;
 	bool continue_clock_on;
@@ -927,8 +927,6 @@ struct s5p_mfc_dec {
 	unsigned int dynamic_set;
 	unsigned int dynamic_used;
 
-	struct s5p_mfc_buf_queue ref_buf_queue;
-
 	struct dec_dpb_ref_info *ref_info;
 	int assigned_fd[MFC_MAX_DPBS];
 	struct mfc_user_shared_handle sh_handle;
@@ -939,6 +937,7 @@ struct s5p_mfc_dec {
 	int is_dpb_full;
 
 	unsigned int err_reuse_flag;
+	unsigned int dec_only_release_flag;
 
 	/* for debugging about black bar detection */
 	void *frame_vaddr[3][30];
@@ -947,6 +946,8 @@ struct s5p_mfc_dec {
 	int fd[3][30];
 	unsigned int frame_size[3][30];
 	unsigned char frame_cnt;
+
+	unsigned int super64_bframe;
 };
 
 struct s5p_mfc_enc {
@@ -957,8 +958,6 @@ struct s5p_mfc_enc {
 	int frame_count;
 	enum v4l2_mpeg_mfc51_video_frame_type frame_type;
 	enum v4l2_mpeg_mfc51_video_force_frame_type force_frame_type;
-
-	struct s5p_mfc_buf_queue ref_buf_queue;
 
 	size_t luma_dpb_size;
 	size_t chroma_dpb_size;
@@ -1013,6 +1012,7 @@ struct s5p_mfc_ctx {
 
 	struct s5p_mfc_buf_queue src_buf_queue;
 	struct s5p_mfc_buf_queue dst_buf_queue;
+	struct s5p_mfc_buf_queue ref_buf_queue;
 	struct s5p_mfc_buf_queue src_buf_nal_queue;
 	struct s5p_mfc_buf_queue dst_buf_nal_queue;
 	spinlock_t buf_queue_lock;
